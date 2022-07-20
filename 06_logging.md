@@ -40,3 +40,40 @@ Code Severity Keyword Description
 7   Debug       debug           Debug level messages
 ```
 
+Each Linux distro uses a slightly sifferent set of defaults,  and logging rules are configurable and can be changed. 
+
+Many messages are stored in ```/var/log/messages``` or ```/var/log/syslog```. 
+
+## Logger
+
+Logger command generate syslog messages. In its simplest form you simply supply a message to the logger utility. By derfault, the logger utility creates messages using the user facility and the notice severity
+
+The message generated without options includes date, user and message.
+
+```sh
+logger "Message"
+logger -p local0.info "Message" # Uses Local0 Facility
+logger -t myscript -p local0.info "Message" # Tag Message
+logger -i -t myscript "Message" # Process ID (PID)
+logger -s -p local0.info "Message" # -s: Displayed on Screen
+```
+
+Create a function in shell script to handle logging
+
+```sh
+logit()
+{
+    local LOG_LEVEL=$1
+    shift
+    MSG=$@
+    TIMESTAMP=$(date +"%Y-%m-%d %T")
+    if [ $LOG_LEVEL = 'ERROR' ] || $VERBOSE
+    then
+        echo "${TIMESTAMP} ${HOST} ${PROGRAM_NAME} [${PID}]: ${$LOG_LEVEL} ${MSG}"
+}
+```
+
+- Logit expects that log level followed by a message passed into it.
+- ```shift``` command is run to shift the positional parameters to the left.
+- If the log level is error or the VERBOSE global variable is set to true, a message is echoed to the sccreen, which includes info such timestamp, log level and the message.
+
